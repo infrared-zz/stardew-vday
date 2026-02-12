@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Secret Farm Event 💌</title>
+
   <style>
     :root{
       --cream:#fff6e6;
@@ -12,10 +13,13 @@
       --shadow: rgba(0,0,0,.35);
       --pink:#ff4d6d;
       --pink2:#ff7aa1;
-      --green:#29cc74;
       --gold:#ffd36b;
+      --green1:#40f08c;
+      --green2:#1fb25b;
     }
-    *{box-sizing:border-box}
+
+    *{ box-sizing:border-box; }
+
     body{
       margin:0;
       height:100vh;
@@ -26,6 +30,7 @@
       background:#79c9ff;
     }
 
+    /* ===== Background ===== */
     .scene{
       position:relative;
       height:100%;
@@ -34,25 +39,7 @@
         radial-gradient(circle at 18% 18%, rgba(255,246,200,.95), rgba(255,246,200,0) 38%),
         linear-gradient(#79c9ff 0%, #bde7ff 48%, #f9f2c7 72%, #7bd77b 72%, #2ea24f 100%);
     }
-    .hills{
-      position:absolute; left:0; right:0;
-      bottom:28vh; height:22vh;
-      background:
-        radial-gradient(120% 100% at 10% 120%, #2fbe62 0 55%, transparent 56%),
-        radial-gradient(120% 100% at 55% 120%, #26ad57 0 60%, transparent 61%),
-        radial-gradient(120% 100% at 95% 120%, #2fbe62 0 55%, transparent 56%);
-      opacity:.95; pointer-events:none; z-index:1;
-    }
-    .field{
-      position:absolute; left:0; right:0; bottom:0;
-      height:34vh;
-      background:
-        linear-gradient(#2ea24f, #227a3b),
-        repeating-linear-gradient(90deg, rgba(0,0,0,.10) 0 10px, rgba(0,0,0,0) 10px 20px),
-        repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 10px, rgba(0,0,0,0) 10px 20px);
-      background-blend-mode: normal, multiply, multiply;
-      pointer-events:none; z-index:2;
-    }
+
     .cloud{
       position:absolute;
       top:12vh;
@@ -63,7 +50,7 @@
       z-index:3;
       background:
         radial-gradient(circle at 25% 55%, rgba(255,255,255,.95) 0 32px, transparent 33px),
-        radialocal-gradient(circle at 50% 40%, rgba(255,255,255,.95) 0 42px, transparent 43px),
+        radial-gradient(circle at 50% 40%, rgba(255,255,255,.95) 0 42px, transparent 43px),
         radial-gradient(circle at 75% 55%, rgba(255,255,255,.95) 0 30px, transparent 31px);
     }
     @keyframes drift{
@@ -71,6 +58,31 @@
       to   { transform: translateX(calc(100vw + 240px)); }
     }
 
+    .hills{
+      position:absolute; left:0; right:0;
+      bottom:28vh; height:22vh;
+      background:
+        radial-gradient(120% 100% at 10% 120%, #2fbe62 0 55%, transparent 56%),
+        radial-gradient(120% 100% at 55% 120%, #26ad57 0 60%, transparent 61%),
+        radial-gradient(120% 100% at 95% 120%, #2fbe62 0 55%, transparent 56%);
+      opacity:.95;
+      pointer-events:none;
+      z-index:1;
+    }
+
+    .field{
+      position:absolute; left:0; right:0; bottom:0;
+      height:34vh;
+      background:
+        linear-gradient(#2ea24f, #227a3b),
+        repeating-linear-gradient(90deg, rgba(0,0,0,.10) 0 10px, rgba(0,0,0,0) 10px 20px),
+        repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 10px, rgba(0,0,0,0) 10px 20px);
+      background-blend-mode: normal, multiply, multiply;
+      pointer-events:none;
+      z-index:2;
+    }
+
+    /* ===== Floating hearts ===== */
     .heart{
       position:absolute;
       bottom:-30px;
@@ -87,6 +99,7 @@
       100% { transform: translateY(-640px) scale(1.25); opacity:0; }
     }
 
+    /* ===== UI ===== */
     .ui{
       position:fixed;
       left:50%;
@@ -95,6 +108,7 @@
       width:min(980px, 94vw);
       z-index:9999;
     }
+
     .box{
       background: linear-gradient(var(--ui2), var(--ui1));
       border:4px solid var(--cream);
@@ -103,6 +117,7 @@
       padding:18px;
       position:relative;
     }
+
     .nameTag{
       display:inline-block;
       margin-top:-36px;
@@ -115,20 +130,28 @@
       box-shadow: 0 8px 0 var(--shadow);
       font-weight:900;
     }
-    .row{display:flex; gap:14px; align-items:center; flex-wrap:wrap;}
-    ..portrait-img{
-  width:74px;
-  height:74px;
-  border:4px solid var(--cream);
-  border-radius:14px;
-  box-shadow: 0 8px 0 var(--shadow);
-  image-rendering: pixelated;
-  object-fit: cover;
-  background:#2b2b2b;
-}
-    h1{margin:0 0 8px; font-size:26px; line-height:1.2;}
-    p{margin:0 0 14px; font-size:16px; line-height:1.6; opacity:.95;}
-    .buttons{display:flex; gap:12px; flex-wrap:wrap; align-items:center;}
+
+    .row{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+
+    /* 👇 chicken portrait image */
+    .portrait-img{
+      width:74px;
+      height:74px;
+      border:4px solid var(--cream);
+      border-radius:14px;
+      box-shadow: 0 8px 0 var(--shadow);
+      background:#2b2b2b;
+      object-fit: cover;
+      image-rendering: pixelated;
+      flex:0 0 auto;
+      display:block;
+    }
+
+    h1{ margin:0 0 8px; font-size:26px; line-height:1.2; }
+    p{ margin:0 0 14px; font-size:16px; line-height:1.6; opacity:.95; }
+
+    .buttons{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+
     button{
       font: inherit;
       font-size:16px;
@@ -144,7 +167,7 @@
     button:active{ transform: translateY(2px); box-shadow: 0 5px 0 var(--shadow); }
 
     #yesBtn{
-      background: linear-gradient(#40f08c, #1fb25b);
+      background: linear-gradient(var(--green1), var(--green2));
       color:#08301b;
       border-color:#eaffea;
       font-weight:900;
@@ -157,8 +180,11 @@
       font-weight:900;
     }
 
-    /* Fire effect */
-    #noBtn.fire{ filter:saturate(1.2) contrast(1.05); animation:wobble .18s infinite alternate; }
+    /* Fire effect for NO */
+    #noBtn.fire{
+      filter:saturate(1.2) contrast(1.05);
+      animation:wobble .18s infinite alternate;
+    }
     @keyframes wobble{
       from{ transform: rotate(-1.5deg) translateY(-1px); }
       to  { transform: rotate(1.5deg) translateY(1px); }
@@ -179,12 +205,12 @@
       opacity:1;
       animation: flameUp 650ms linear infinite;
     }
-    #noBtn.fire .flame:nth-child(1){ left:25%; animation-delay:0ms;  }
-    #noBtn.fire .flame:nth-child(2){ left:45%; animation-delay:120ms;}
-    #noBtn.fire .flame:nth-child(3){ left:65%; animation-delay:240ms;}
-    #noBtn.fire .flame:nth-child(4){ left:80%; animation-delay:360ms;}
+    #noBtn.fire .flame:nth-child(1){ left:25%; animation-delay:0ms; }
+    #noBtn.fire .flame:nth-child(2){ left:45%; animation-delay:120ms; }
+    #noBtn.fire .flame:nth-child(3){ left:65%; animation-delay:240ms; }
+    #noBtn.fire .flame:nth-child(4){ left:80%; animation-delay:360ms; }
     @keyframes flameUp{
-      0%   { transform: translate(-50%, 0) scale(1);   opacity:.9; }
+      0%   { transform: translate(-50%, 0) scale(1); opacity:.9; }
       60%  { opacity:.7; }
       100% { transform: translate(-50%, -34px) scale(0.2); opacity:0; }
     }
@@ -202,11 +228,12 @@
     }
     .dot{
       width:10px; height:10px; border-radius:50%;
-      background:#7d0; /* green = on */
+      background:#7d0; /* ON */
       box-shadow: 0 0 0 3px rgba(0,0,0,.15) inset;
     }
-    .dot.off{ background:#a33; } /* red = off */
+    .dot.off{ background:#a33; } /* OFF */
 
+    /* Success overlay */
     .win{
       position:fixed; inset:0;
       display:none;
@@ -223,9 +250,10 @@
       box-shadow: 0 12px 0 var(--shadow);
       padding:22px 18px;
     }
-    .card h2{margin:0 0 10px; font-size:30px;}
-    .card p{margin:0; font-size:16px;}
+    .card h2{ margin:0 0 10px; font-size:30px; }
+    .card p{ margin:0; font-size:16px; }
 
+    /* Heart burst */
     .burst{
       position:fixed;
       left:50%; top:55%;
@@ -239,6 +267,15 @@
       0%{opacity:0; transform:translate(-50%,-50%) scale(.7)}
       15%{opacity:1}
       100%{opacity:0; transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.55)}
+    }
+
+    .shake{ animation: shake .25s; }
+    @keyframes shake{
+      0%{transform:translateX(-50%) translateY(0)}
+      25%{transform:translateX(-50%) translateY(-2px)}
+      50%{transform:translateX(-50%) translateY(2px)}
+      75%{transform:translateX(-50%) translateY(-1px)}
+      100%{transform:translateX(-50%) translateY(0)}
     }
   </style>
 </head>
@@ -257,7 +294,8 @@
       <div class="nameTag" id="nameTag">BillyHill</div>
 
       <div class="row" style="margin-bottom:12px;">
-        <div class="portrait" aria-hidden="true"></div>
+        <!-- 👇 uses chicken.png -->
+        <img src="./chicken.png" class="portrait-img" alt="Chicken">
         <div style="flex:1; min-width:240px;">
           <h1 id="title">Will you be my Valentine? 💌</h1>
           <p id="dialogue">I did all my chores… but I still need your answer 🌻</p>
@@ -287,11 +325,11 @@
     </div>
   </div>
 
-  <!-- Put stardew.mp3 in your repo root (same folder as index.html) -->
+  <!-- 👇 uses stardew.mp3 -->
   <audio id="bgm" src="./stardew.mp3" loop preload="auto"></audio>
 
   <script>
-    // floating hearts
+    // Floating hearts
     const heartChars = ["💖","💘","💕","💗","💞"];
     function spawnHeart(){
       const h = document.createElement("div");
@@ -305,7 +343,7 @@
     setInterval(spawnHeart, 650);
     for(let i=0;i<10;i++) spawnHeart();
 
-    // heart burst
+    // Heart burst
     function heartBurst(count=44){
       for(let i=0;i<count;i++){
         const e=document.createElement("div");
@@ -319,11 +357,11 @@
       }
     }
 
-    const yesBtn=document.getElementById("yesBtn");
-    const noBtn=document.getElementById("noBtn");
-    const prompt=document.getElementById("prompt");
-    const win=document.getElementById("win");
-    const box=document.getElementById("box");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn  = document.getElementById("noBtn");
+    const prompt = document.getElementById("prompt");
+    const win    = document.getElementById("win");
+    const box    = document.getElementById("box");
 
     function acceptYes(){
       heartBurst(56);
@@ -334,7 +372,7 @@
     }
     yesBtn.addEventListener("click", acceptYes);
 
-    // guilt + convert NO -> YES after dodges
+    // Guilt lines + NO turns into YES
     const dialogueEl = document.getElementById("dialogue");
     const guiltLines = [
       "Oh… okay. I’ll just… stand here by the crops then. 🥀",
@@ -367,9 +405,12 @@
       noBtn.style.color = "#08301b";
       noBtn.style.borderColor = "#eaffea";
       noBtn.innerHTML = "YES 💚 (fine...)";
-      noBtn.onclick = acceptYes;
-      noBtn.onmouseover = null;
-      noBtn.ontouchstart = null;
+      // make it actually work
+      noBtn.onclick = (e)=>{ e.preventDefault(); acceptYes(); };
+
+      // stop dodging behavior
+      noBtn.replaceWith(noBtn.cloneNode(true)); // removes old listeners safely
+
       dialogueEl.textContent = "There. Problem solved. 😌💚";
       heartBurst(18);
     }
@@ -385,7 +426,8 @@
       noBtn.style.top=y+"px";
     }
 
-    function dodge(){
+    function dodge(e){
+      if(e) e.preventDefault();
       ignite(true);
       setGuilt();
       moveNo();
@@ -396,11 +438,11 @@
     }
 
     noBtn.addEventListener("mouseover", dodge);
-    noBtn.addEventListener("click", (e)=>{ e.preventDefault(); dodge(); });
-    noBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); dodge(); }, {passive:false});
+    noBtn.addEventListener("click", dodge);
+    noBtn.addEventListener("touchstart", dodge, {passive:false});
     noBtn.addEventListener("mouseleave", ()=>ignite(false));
 
-    // MUSIC (plays ./stardew.mp3 from your repo)
+    // Music controls (plays ./stardew.mp3)
     const musicBtn = document.getElementById("musicBtn");
     const musicDot = document.getElementById("musicDot");
     const bgm = document.getElementById("bgm");
@@ -408,16 +450,17 @@
     function setMusicUI(on){
       musicDot.classList.toggle("off", !on);
     }
+
     async function startMusic(){
       try{
         bgm.volume = 0.35;
-        await bgm.play();
+        await bgm.play();            // requires user gesture -> clicking MUSIC is perfect
         setMusicUI(true);
       }catch(err){
-        // autoplay restrictions: user must click the button; this is just in case
-        console.log("Music start blocked:", err);
+        console.log("Music blocked until click:", err);
       }
     }
+
     function stopMusic(){
       bgm.pause();
       bgm.currentTime = 0;
@@ -435,6 +478,7 @@
   </script>
 </body>
 </html>
+
 
 
 
