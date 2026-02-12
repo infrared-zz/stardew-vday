@@ -1,211 +1,308 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Secret Farm Event 💌</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Farm Valentine 💌</title>
+  <style>
+    :root{
+      --cream:#fff6e6;
+      --ink:#1e1e1e;
+      --ui1:#2a2a2a;
+      --ui2:#3a3a3a;
+      --shadow: rgba(0,0,0,.35);
+      --pink:#ff4d6d;
+      --pink2:#ff7aa1;
+      --green:#29cc74;
+    }
 
-<style>
-body{
-  margin:0;
-  overflow:hidden;
-  font-family: system-ui, sans-serif;
-  background: linear-gradient(#6ecbff 0%, #ffd7a8 55%, #4fbf63 55%, #2e8b47 100%);
-  height:100vh;
-  color:white;
-}
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      height:100vh;
+      overflow:hidden;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      letter-spacing: .3px;
+      background: #79c9ff;
+      color: var(--cream);
+    }
 
-/* Floating hearts */
-.heart{
-  position:absolute;
-  font-size:20px;
-  animation: float 6s linear infinite;
-}
-@keyframes float{
-  0%{transform:translateY(40px);opacity:0}
-  20%{opacity:1}
-  100%{transform:translateY(-600px);opacity:0}
-}
+    /* Background */
+    .scene{
+      position:relative;
+      height:100%;
+      width:100%;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255,246,200,.95), rgba(255,246,200,0) 38%),
+        linear-gradient(#79c9ff 0%, #bde7ff 48%, #f9f2c7 72%, #7bd77b 72%, #2ea24f 100%);
+    }
 
-/* Dialogue box */
-.dialogue{
-  position:absolute;
-  bottom:8vh;
-  left:50%;
-  transform:translateX(-50%);
-  background:#2a2a2a;
-  border:4px solid #fff6e0;
-  border-radius:15px;
-  padding:20px;
-  width:min(800px,90vw);
-  box-shadow:0 10px 0 rgba(0,0,0,.3);
-}
+    .hills{
+      position:absolute; left:0; right:0;
+      bottom:28vh; height:22vh;
+      background:
+        radial-gradient(120% 100% at 10% 120%, #2fbe62 0 55%, transparent 56%),
+        radial-gradient(120% 100% at 55% 120%, #26ad57 0 60%, transparent 61%),
+        radial-gradient(120% 100% at 95% 120%, #2fbe62 0 55%, transparent 56%);
+      opacity:.95;
+      pointer-events:none;
+      z-index: 1;
+    }
 
-h1{
-  margin:0 0 10px;
-  font-size:32px;
-}
+    .field{
+      position:absolute; left:0; right:0; bottom:0;
+      height:34vh;
+      background:
+        linear-gradient(#2ea24f, #227a3b),
+        repeating-linear-gradient(90deg, rgba(0,0,0,.10) 0 10px, rgba(0,0,0,0) 10px 20px),
+        repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 10px, rgba(0,0,0,0) 10px 20px);
+      background-blend-mode: normal, multiply, multiply;
+      pointer-events:none;
+      z-index: 2;
+    }
 
-p{
-  font-size:18px;
-  margin:0 0 15px;
-}
+    /* Clouds */
+    .cloud{
+      position:absolute;
+      top:12vh;
+      width:180px;
+      height:64px;
+      opacity:.7;
+      filter: drop-shadow(0 10px 0 rgba(0,0,0,.08));
+      animation: drift linear infinite;
+      z-index: 3;
+      background:
+        radial-gradient(circle at 25% 55%, rgba(255,255,255,.95) 0 32px, transparent 33px),
+        radial-gradient(circle at 50% 40%, rgba(255,255,255,.95) 0 42px, transparent 43px),
+        radial-gradient(circle at 75% 55%, rgba(255,255,255,.95) 0 30px, transparent 31px);
+    }
+    @keyframes drift{
+      from { transform: translateX(-240px); }
+      to   { transform: translateX(calc(100vw + 240px)); }
+    }
 
-button{
-  padding:12px 18px;
-  font-size:18px;
-  border-radius:12px;
-  border:3px solid white;
-  cursor:pointer;
-  font-weight:bold;
-}
+    /* Floating hearts */
+    .heart{
+      position:absolute;
+      bottom:-30px;
+      font-size:18px;
+      opacity:0;
+      animation: floatUp 6.7s linear forwards;
+      filter: drop-shadow(0 2px 0 rgba(0,0,0,.25));
+      z-index: 4;
+      pointer-events:none;
+    }
+    @keyframes floatUp{
+      0%   { transform: translateY(20px) scale(.9); opacity:0; }
+      15%  { opacity:1; }
+      100% { transform: translateY(-640px) scale(1.25); opacity:0; }
+    }
 
-#yes{
-  background:#39e67c;
-  color:#08301b;
-}
+    /* Dialogue UI (FORCED ON TOP) */
+    .ui{
+      position:fixed;
+      left:50%;
+      bottom:6vh;
+      transform:translateX(-50%);
+      width:min(920px, 94vw);
+      z-index: 9999; /* <- this prevents “only background” issue */
+    }
 
-#no{
-  background:#ff4d6d;
-  color:#3a0c18;
-  position:relative;
-  transition:transform .2s;
-}
+    .box{
+      background: linear-gradient(var(--ui2), var(--ui1));
+      border:4px solid var(--cream);
+      border-radius: 16px;
+      box-shadow: 0 12px 0 var(--shadow);
+      padding:18px;
+    }
 
-/* Chick */
-.chick{
-  position:absolute;
-  bottom:35vh;
-  left:50%;
-  transform:translateX(-50%);
-  width:80px;
-  height:80px;
-  background:#ffd85a;
-  border-radius:50%;
-}
-.chick::before{
-  content:"";
-  position:absolute;
-  top:28px;
-  left:22px;
-  width:10px;
-  height:10px;
-  background:black;
-  border-radius:50%;
-  box-shadow:26px 0 black;
-}
-.chick::after{
-  content:"";
-  position:absolute;
-  top:40px;
-  left:34px;
-  width:12px;
-  height:8px;
-  background:#ff9a3d;
-  border-radius:4px;
-}
+    .nameTag{
+      display:inline-block;
+      margin-top:-36px;
+      margin-bottom:10px;
+      background: linear-gradient(#ffdb7a, #f2b643);
+      color:#2f2200;
+      border:4px solid var(--cream);
+      border-radius: 12px;
+      padding:8px 12px;
+      box-shadow: 0 8px 0 var(--shadow);
+      font-weight:800;
+    }
 
-/* Shake animation */
-@keyframes shake{
-  0%{transform:translate(0,0)}
-  25%{transform:translate(4px,-3px)}
-  50%{transform:translate(-4px,3px)}
-  75%{transform:translate(3px,2px)}
-  100%{transform:translate(0,0)}
-}
-.shake{
-  animation:shake .3s;
-}
+    .row{display:flex; gap:14px; align-items:center; flex-wrap:wrap;}
+    .portrait{
+      width:74px; height:74px;
+      border:4px solid var(--cream);
+      border-radius:14px;
+      box-shadow: 0 8px 0 var(--shadow);
+      background:
+        radial-gradient(circle at 50% 42%, #ffd85a 0 30px, transparent 31px),
+        linear-gradient(#ff9a3d 0 0) 34px 42px/10px 8px no-repeat,
+        radial-gradient(circle, #1b1b1b 40%, transparent 42%) 26px 34px/10px 10px no-repeat,
+        radial-gradient(circle, #1b1b1b 40%, transparent 42%) 46px 34px/10px 10px no-repeat;
+      background-color:#2b2b2b;
+      flex:0 0 auto;
+    }
 
-.center{
-  position:absolute;
-  inset:0;
-  display:none;
-  place-items:center;
-  text-align:center;
-  font-size:28px;
-}
-</style>
+    h1{margin:0 0 8px; font-size:26px; line-height:1.2;}
+    p{margin:0 0 14px; font-size:16px; line-height:1.6; opacity:.95;}
+
+    .buttons{display:flex; gap:12px; flex-wrap:wrap;}
+    button{
+      font: inherit;
+      font-size:16px;
+      padding:12px 16px;
+      border-radius: 14px;
+      border:3px solid var(--cream);
+      cursor:pointer;
+      box-shadow: 0 7px 0 var(--shadow);
+      user-select:none;
+    }
+    button:active{ transform: translateY(2px); box-shadow: 0 5px 0 var(--shadow); }
+
+    #yesBtn{
+      background: linear-gradient(#40f08c, #1fb25b);
+      color:#08301b;
+      border-color:#eaffea;
+      font-weight:900;
+    }
+    #noBtn{
+      background: linear-gradient(var(--pink2), var(--pink));
+      color:#3a0c18;
+      border-color:#ffe8ef;
+      font-weight:900;
+      position:relative;
+    }
+
+    .win{
+      position:fixed;
+      inset:0;
+      display:none;
+      place-items:center;
+      text-align:center;
+      z-index: 10000;
+      padding:24px;
+    }
+    .card{
+      width:min(820px,94vw);
+      background: linear-gradient(var(--ui2), var(--ui1));
+      border:4px solid var(--cream);
+      border-radius: 16px;
+      box-shadow: 0 12px 0 var(--shadow);
+      padding:22px 18px;
+    }
+    .card h2{margin:0 0 10px; font-size:30px;}
+    .card p{margin:0; font-size:16px;}
+
+    .burst{
+      position:fixed;
+      left:50%; top:55%;
+      transform:translate(-50%,-50%);
+      pointer-events:none;
+      animation: pop 950ms ease-out forwards;
+      filter: drop-shadow(0 2px 0 rgba(0,0,0,.25));
+      z-index: 20000;
+    }
+    @keyframes pop{
+      0%{opacity:0; transform:translate(-50%,-50%) scale(.7)}
+      15%{opacity:1}
+      100%{opacity:0; transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.55)}
+    }
+  </style>
 </head>
 
 <body>
+  <div class="scene">
+    <div class="cloud" style="top:10vh; animation-duration: 34s;"></div>
+    <div class="cloud" style="top:18vh; width:220px; height:74px; opacity:.55; animation-duration: 46s; animation-delay:-14s;"></div>
+    <div class="cloud" style="top:26vh; width:150px; height:58px; opacity:.45; animation-duration: 39s; animation-delay:-20s;"></div>
 
-<div class="chick"></div>
-
-<div class="dialogue" id="dialogue">
-  <h1>Listen… 💌</h1>
-  <p>I watered the crops. I fed the chickens.  
-  But I still haven’t answered the most important question...</p>
-  <p><b>Will you be my Valentine?</b></p>
-
-  <button id="yes">YES 💖</button>
-  <button id="no">NO 💔</button>
-</div>
-
-<div class="center" id="center">
-  <div>
-    <h1>YOU SAID YES 😭💖</h1>
-    <p>This is the best farm day ever 🌻</p>
+    <div class="hills"></div>
+    <div class="field"></div>
   </div>
-</div>
 
-<script>
-const hearts = ["💖","💘","💕","💗","💞"];
-function spawnHeart(){
-  const h=document.createElement("div");
-  h.className="heart";
-  h.innerText=hearts[Math.floor(Math.random()*hearts.length)];
-  h.style.left=Math.random()*100+"vw";
-  h.style.bottom="-30px";
-  h.style.fontSize=(16+Math.random()*20)+"px";
-  document.body.appendChild(h);
-  setTimeout(()=>h.remove(),6000);
-}
-setInterval(spawnHeart,600);
+  <div class="ui" id="prompt">
+    <div class="box">
+      <div class="nameTag">Farmer</div>
 
-const yes=document.getElementById("yes");
-const no=document.getElementById("no");
-const dialogue=document.getElementById("dialogue");
-const center=document.getElementById("center");
+      <div class="row" style="margin-bottom:12px;">
+        <div class="portrait" aria-hidden="true"></div>
+        <div style="flex:1; min-width:240px;">
+          <h1>Will you be my Valentine? 💌</h1>
+          <p>I did all my chores… but I still need your answer 🌻</p>
+        </div>
+      </div>
 
-function heartExplosion(){
-  for(let i=0;i<40;i++){
-    const h=document.createElement("div");
-    h.innerText="💖";
-    h.style.position="fixed";
-    h.style.left="50%";
-    h.style.top="60%";
-    h.style.fontSize=(18+Math.random()*25)+"px";
-    h.style.transform=`translate(${Math.random()*400-200}px,${Math.random()*300-200}px)`;
-    document.body.appendChild(h);
-    setTimeout(()=>h.remove(),800);
-  }
-}
+      <div class="buttons">
+        <button id="yesBtn">YES 💚</button>
+        <button id="noBtn">NO 💔</button>
+      </div>
+    </div>
+  </div>
 
-yes.onclick=()=>{
-  heartExplosion();
-  document.body.classList.add("shake");
-  setTimeout(()=>document.body.classList.remove("shake"),300);
-  dialogue.style.display="none";
-  center.style.display="grid";
-};
+  <div class="win" id="win">
+    <div class="card">
+      <h2>YOU SAID YES 😭💖</h2>
+      <p>Meet me by the farm gate tonight? 🌙</p>
+    </div>
+  </div>
 
-let scale=1;
-function moveNo(){
-  no.style.position="fixed";
-  const x=Math.random()*(window.innerWidth-100);
-  const y=Math.random()*(window.innerHeight-50);
-  no.style.left=x+"px";
-  no.style.top=y+"px";
-  scale-=0.1;
-  if(scale<0.3) scale=0.3;
-  no.style.transform=`scale(${scale})`;
-}
-no.addEventListener("mouseover",moveNo);
-no.addEventListener("click",moveNo);
-no.addEventListener("touchstart",(e)=>{e.preventDefault();moveNo();},{passive:false});
-</script>
+  <script>
+    // floating hearts
+    const heartChars = ["💖","💘","💕","💗","💞"];
+    function spawnHeart(){
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+      h.style.left = (Math.random()*100) + "vw";
+      h.style.fontSize = (14 + Math.random()*18) + "px";
+      document.body.appendChild(h);
+      setTimeout(()=>h.remove(), 7000);
+    }
+    setInterval(spawnHeart, 650);
+    for(let i=0;i<10;i++) spawnHeart();
 
+    // heart burst
+    function heartBurst(count=30){
+      for(let i=0;i<count;i++){
+        const e=document.createElement("div");
+        e.className="burst";
+        e.textContent=heartChars[Math.floor(Math.random()*heartChars.length)];
+        e.style.setProperty("--dx", (Math.random()*460 - 230) + "px");
+        e.style.setProperty("--dy", (Math.random()*320 - 280) + "px");
+        e.style.fontSize = (18 + Math.random()*20) + "px";
+        document.body.appendChild(e);
+        setTimeout(()=>e.remove(), 1000);
+      }
+    }
+
+    const yesBtn=document.getElementById("yesBtn");
+    const noBtn=document.getElementById("noBtn");
+    const prompt=document.getElementById("prompt");
+    const win=document.getElementById("win");
+
+    yesBtn.addEventListener("click", ()=>{
+      heartBurst(40);
+      prompt.style.display="none";
+      win.style.display="grid";
+    });
+
+    // No runs away
+    function moveNo(){
+      noBtn.style.position="fixed";
+      const pad=12;
+      const w=noBtn.offsetWidth;
+      const h=noBtn.offsetHeight;
+      const x=Math.floor(Math.random()*(window.innerWidth - w - pad*2)) + pad;
+      const y=Math.floor(Math.random()*(window.innerHeight - h - pad*2)) + pad;
+      noBtn.style.left=x+"px";
+      noBtn.style.top=y+"px";
+    }
+    noBtn.addEventListener("mouseover", moveNo);
+    noBtn.addEventListener("click", moveNo);
+    noBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); moveNo(); }, {passive:false});
+  </script>
 </body>
 </html>
+
 
