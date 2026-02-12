@@ -128,4 +128,84 @@ button{
 </style>
 </head>
 
-<
+<body>
+
+<div class="chick"></div>
+
+<div class="dialogue" id="dialogue">
+  <h1>Listen… 💌</h1>
+  <p>I watered the crops. I fed the chickens.  
+  But I still haven’t answered the most important question...</p>
+  <p><b>Will you be my Valentine?</b></p>
+
+  <button id="yes">YES 💖</button>
+  <button id="no">NO 💔</button>
+</div>
+
+<div class="center" id="center">
+  <div>
+    <h1>YOU SAID YES 😭💖</h1>
+    <p>This is the best farm day ever 🌻</p>
+  </div>
+</div>
+
+<script>
+const hearts = ["💖","💘","💕","💗","💞"];
+function spawnHeart(){
+  const h=document.createElement("div");
+  h.className="heart";
+  h.innerText=hearts[Math.floor(Math.random()*hearts.length)];
+  h.style.left=Math.random()*100+"vw";
+  h.style.bottom="-30px";
+  h.style.fontSize=(16+Math.random()*20)+"px";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),6000);
+}
+setInterval(spawnHeart,600);
+
+const yes=document.getElementById("yes");
+const no=document.getElementById("no");
+const dialogue=document.getElementById("dialogue");
+const center=document.getElementById("center");
+
+function heartExplosion(){
+  for(let i=0;i<40;i++){
+    const h=document.createElement("div");
+    h.innerText="💖";
+    h.style.position="fixed";
+    h.style.left="50%";
+    h.style.top="60%";
+    h.style.fontSize=(18+Math.random()*25)+"px";
+    h.style.transform=`translate(${Math.random()*400-200}px,${Math.random()*300-200}px)`;
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),800);
+  }
+}
+
+yes.onclick=()=>{
+  heartExplosion();
+  document.body.classList.add("shake");
+  setTimeout(()=>document.body.classList.remove("shake"),300);
+  dialogue.style.display="none";
+  center.style.display="grid";
+};
+
+let scale=1;
+function moveNo(){
+  no.style.position="fixed";
+  const x=Math.random()*(window.innerWidth-100);
+  const y=Math.random()*(window.innerHeight-50);
+  no.style.left=x+"px";
+  no.style.top=y+"px";
+  scale-=0.1;
+  if(scale<0.3) scale=0.3;
+  no.style.transform=`scale(${scale})`;
+}
+no.addEventListener("mouseover",moveNo);
+no.addEventListener("click",moveNo);
+no.addEventListener("touchstart",(e)=>{e.preventDefault();moveNo();},{passive:false});
+</script>
+
+</body>
+</html>
+
