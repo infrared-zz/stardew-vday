@@ -63,7 +63,7 @@
       z-index:3;
       background:
         radial-gradient(circle at 25% 55%, rgba(255,255,255,.95) 0 32px, transparent 33px),
-        radial-gradient(circle at 50% 40%, rgba(255,255,255,.95) 0 42px, transparent 43px),
+        radialocal-gradient(circle at 50% 40%, rgba(255,255,255,.95) 0 42px, transparent 43px),
         radial-gradient(circle at 75% 55%, rgba(255,255,255,.95) 0 30px, transparent 31px);
     }
     @keyframes drift{
@@ -92,7 +92,7 @@
       left:50%;
       bottom:6vh;
       transform:translateX(-50%);
-      width:min(960px, 94vw);
+      width:min(980px, 94vw);
       z-index:9999;
     }
     .box{
@@ -131,6 +131,7 @@
       background-color:#2b2b2b;
       flex:0 0 auto;
     }
+
     h1{margin:0 0 8px; font-size:26px; line-height:1.2;}
     p{margin:0 0 14px; font-size:16px; line-height:1.6; opacity:.95;}
     .buttons{display:flex; gap:12px; flex-wrap:wrap; align-items:center;}
@@ -194,7 +195,7 @@
       100% { transform: translate(-50%, -34px) scale(0.2); opacity:0; }
     }
 
-    /* Music button */
+    /* Music button + dot indicator */
     .musicBtn{
       margin-left:auto;
       background: linear-gradient(#ffe59b, var(--gold));
@@ -207,10 +208,10 @@
     }
     .dot{
       width:10px; height:10px; border-radius:50%;
-      background:#7d0;
+      background:#7d0; /* green = on */
       box-shadow: 0 0 0 3px rgba(0,0,0,.15) inset;
     }
-    .dot.off{ background:#a33; }
+    .dot.off{ background:#a33; } /* red = off */
 
     .win{
       position:fixed; inset:0;
@@ -245,15 +246,6 @@
       15%{opacity:1}
       100%{opacity:0; transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.55)}
     }
-
-    .shake{ animation: shake .25s; }
-    @keyframes shake{
-      0%{transform:translateX(-50%) translateY(0)}
-      25%{transform:translateX(-50%) translateY(-2px)}
-      50%{transform:translateX(-50%) translateY(2px)}
-      75%{transform:translateX(-50%) translateY(-1px)}
-      100%{transform:translateX(-50%) translateY(0)}
-    }
   </style>
 </head>
 
@@ -286,9 +278,9 @@
           <span class="flame"></span><span class="flame"></span><span class="flame"></span><span class="flame"></span>
         </button>
 
-        <button class="musicBtn" id="musicBtn" title="Toggle festival music">
+        <button class="musicBtn" id="musicBtn" title="Toggle music">
           <span class="dot off" id="musicDot"></span>
-          FESTIVAL MUSIC
+          MUSIC
         </button>
       </div>
     </div>
@@ -300,6 +292,9 @@
       <p>Meet me by the farm gate tonight? 🌙</p>
     </div>
   </div>
+
+  <!-- Put stardew.mp3 in your repo root (same folder as index.html) -->
+  <audio id="bgm" src="./stardew.mp3" loop preload="auto"></audio>
 
   <script>
     // floating hearts
@@ -338,17 +333,14 @@
 
     function acceptYes(){
       heartBurst(56);
-      box.classList.add("shake");
-      setTimeout(()=>box.classList.remove("shake"), 260);
       prompt.style.display="none";
       win.style.display="grid";
       stopMusic();
       setMusicUI(false);
     }
-
     yesBtn.addEventListener("click", acceptYes);
 
-    // guilt + transform NO -> YES
+    // guilt + convert NO -> YES after dodges
     const dialogueEl = document.getElementById("dialogue");
     const guiltLines = [
       "Oh… okay. I’ll just… stand here by the crops then. 🥀",
@@ -380,7 +372,7 @@
       noBtn.style.background = "linear-gradient(#40f08c, #1fb25b)";
       noBtn.style.color = "#08301b";
       noBtn.style.borderColor = "#eaffea";
-      noBtn.textContent = "YES 💚 (fine...)";
+      noBtn.innerHTML = "YES 💚 (fine...)";
       noBtn.onclick = acceptYes;
       noBtn.onmouseover = null;
       noBtn.ontouchstart = null;
@@ -414,104 +406,42 @@
     noBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); dodge(); }, {passive:false});
     noBtn.addEventListener("mouseleave", ()=>ignite(false));
 
-    /* ===== Festival Music (original chiptune-ish) ===== */
+    // MUSIC (plays ./stardew.mp3 from your repo)
     const musicBtn = document.getElementById("musicBtn");
     const musicDot = document.getElementById("musicDot");
-    let audioCtx = null, musicOn = false, musicTimer = null, master = null;
+    const bgm = document.getElementById("bgm");
 
-    function setMusicUI(on){ musicDot.classList.toggle("off", !on); }
-
-    function ensureAudio(){
-      if(!audioCtx){
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        master = audioCtx.createGain();
-        master.gain.value = 0.12;
-        master.connect(audioCtx.destination);
+    function setMusicUI(on){
+      musicDot.classList.toggle("off", !on);
+    }
+    async function startMusic(){
+      try{
+        bgm.volume = 0.35;
+        await bgm.play();
+        setMusicUI(true);
+      }catch(err){
+        // autoplay restrictions: user must click the button; this is just in case
+        console.log("Music start blocked:", err);
       }
     }
-
-    function playNote(freq, t, dur, type="square", vol=0.7){
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.type = type;
-      o.frequency.setValueAtTime(freq, t);
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(vol, t + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      o.connect(g); g.connect(master);
-      o.start(t); o.stop(t + dur + 0.02);
-    }
-
-    function playKick(t){
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.type = "sine";
-      o.frequency.setValueAtTime(120, t);
-      o.frequency.exponentialRampToValueAtTime(40, t + 0.09);
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.9, t + 0.005);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
-      o.connect(g); g.connect(master);
-      o.start(t); o.stop(t + 0.14);
-    }
-
-    const BPM = 132;
-    const step = 60 / BPM / 2;
-    const melody = [0,4,7,12, 7,4,0,4, 5,9,12,14, 12,9,5,4];
-    const bass   = [-12,-12,-12,-12, -10,-10,-10,-10, -8,-8,-8,-8, -10,-10,-10,-10];
-    const semitoneToFreq = (semi)=> 440 * Math.pow(2, semi/12);
-
-    function startMusic(){
-      ensureAudio();
-      if(audioCtx.state === "suspended") audioCtx.resume();
-      let i = 0;
-      const startAt = audioCtx.currentTime + 0.02;
-
-      function scheduleChunk(){
-        const now = audioCtx.currentTime;
-        const base = Math.max(now + 0.02, startAt + i*step);
-
-        for(let k=0;k<16;k++){
-          const idx = (i + k) % melody.length;
-          const t = base + k*step;
-          playNote(semitoneToFreq(melody[idx]), t, step*0.9, "square", 0.35);
-          if(((i+k) % 2) === 0) playNote(semitoneToFreq(bass[idx]), t, step*1.8, "triangle", 0.25);
-          if(((i+k) % 4) === 0) playKick(t);
-        }
-        i = (i + 16) % 999999;
-      }
-
-      scheduleChunk();
-      musicTimer = setInterval(scheduleChunk, (step*16*1000) * 0.9);
-    }
-
     function stopMusic(){
-      if(musicTimer){ clearInterval(musicTimer); musicTimer = null; }
-      if(master && audioCtx){
-        const t = audioCtx.currentTime;
-        master.gain.cancelScheduledValues(t);
-        master.gain.setValueAtTime(master.gain.value, t);
-        master.gain.linearRampToValueAtTime(0.0001, t + 0.2);
-      }
+      bgm.pause();
+      bgm.currentTime = 0;
+      setMusicUI(false);
     }
 
-    musicBtn.addEventListener("click", ()=>{
+    let musicOn = false;
+    musicBtn.addEventListener("click", async ()=>{
       musicOn = !musicOn;
-      setMusicUI(musicOn);
-      if(musicOn){
-        ensureAudio();
-        master.gain.value = 0.12;
-        startMusic();
-      }else{
-        stopMusic();
-      }
+      if(musicOn) await startMusic();
+      else stopMusic();
     });
 
-    // default: music off until user clicks the button
     setMusicUI(false);
   </script>
 </body>
 </html>
+
 
 
 
